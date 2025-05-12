@@ -31,6 +31,7 @@ class TaskAPI(APIView):
     def patch(self, request, id=None):
         try:
             task = models.Task.objects.get(id=id)
+            # task = models.Task.objects.get(id=request.data['id'])
             serializer = serializers.TaskSerializer(task, data=request.data, partial=True)
             if not serializer.is_valid():
                 return Response({"status":"error", "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -42,6 +43,7 @@ class TaskAPI(APIView):
     def delete(self, request, id=None):
         try:
             task = models.Task.objects.get(id=id)
+            # task = models.Task.objects.get(id=request.data['id'])
             task.delete()
             return Response({"status":"success", "message": "Task deleted"}, status=status.HTTP_200_OK)
         except models.Task.DoesNotExist:
