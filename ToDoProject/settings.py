@@ -40,10 +40,27 @@ INSTALLED_APPS = [
     
     #apps
     'mainApp',
+    'accounts',
 
     #third party
     'rest_framework',
 ]
+
+import firebase_admin
+from firebase_admin import credentials
+
+FIREBASE_CREDS_PATH = BASE_DIR / "firebase_config/serviceAccountKey.json"
+
+cred = credentials.Certificate(str(FIREBASE_CREDS_PATH))
+firebase_admin.initialize_app(cred)
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'accounts.authentication.FirebaseAuthentication',
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

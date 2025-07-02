@@ -7,3 +7,10 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
         # fields = ['id', 'title', 'description', 'completed', 'created_at', 'updated_at', 'priority', 'due_date']
         # exclude = ['created_at', 'updated_at']
+
+        extra_kwargs = {
+            'user': {'read_only': True}  # ✅ Don't expect this in request
+        }
+
+
+
