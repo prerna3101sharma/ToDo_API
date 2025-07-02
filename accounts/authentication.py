@@ -8,7 +8,7 @@ import firebase_admin
 
 if not firebase_admin._apps:
     # FIREBASE_CREDS_PATH = "/etc/secrets/serviceAccountKey.json"
-    FIREBASE_CREDS_PATH = os.environ.get("FIREBASE_CREDS_PATH", "firebase_config/serviceAccountKey.json")
+    FIREBASE_CREDS_PATH = os.environ.get("FIREBASE_CREDS_PATH", "serviceAccountKey.json")
     cred = credentials.Certificate(FIREBASE_CREDS_PATH)
     firebase_admin.initialize_app(cred)
 
