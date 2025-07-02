@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,17 +104,24 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ToDoAppDB',
-        'USER': 'postgres',
-        'PASSWORD': 'Prerna1234@',  # Replace with your actual password
-        'HOST': 'localhost',  # or your database host
-        'PORT': '5433',  # Default PostgreSQL port
-    }
-}
+# PostgreSQL DB local configuration
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ToDoAppDB',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Prerna1234@',  # Replace with your actual password
+#         'HOST': 'localhost',  # or your database host
+#         'PORT': '5433',  # Default PostgreSQL port
+#     }
+# }
 
+DATABASES = {
+    'default': dj_database_url.parse(
+        "postgresql://dowinn_db_user:9TSUhGFCu7sQU99t8zSIrRqAaxUXK4on@dpg-d1ii7l3ipnbc73bqs0cg-a/dowinn_db",
+        conn_max_age=600
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
