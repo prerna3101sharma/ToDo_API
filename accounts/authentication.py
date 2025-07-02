@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 import firebase_admin
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate('/etc/secrets/serviceAccountKey.json')
+    # FIREBASE_CREDS_PATH = "/etc/secrets/serviceAccountKey.json"
+    FIREBASE_CREDS_PATH = os.environ.get("FIREBASE_CREDS_PATH", "firebase_config/serviceAccountKey.json")
+    cred = credentials.Certificate(FIREBASE_CREDS_PATH)
     firebase_admin.initialize_app(cred)
 
 class FirebaseAuthentication(BaseAuthentication):
