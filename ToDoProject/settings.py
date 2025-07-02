@@ -52,7 +52,7 @@ from firebase_admin import credentials
 
 FIREBASE_CREDS_PATH = BASE_DIR / "firebase_config/serviceAccountKey.json"
 
-cred = credentials.Certificate(str(FIREBASE_CREDS_PATH))
+cred = credentials.Certificate(FIREBASE_CREDS_PATH)
 firebase_admin.initialize_app(cred)
 
 
@@ -123,6 +123,7 @@ DATABASES = {
     )
 }
 
+WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
