@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-k$&x&3a%k0#%^*awv)5ntbj9nk*=-^$fm&br-b9+9k29b=2)hs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["todo-api-wq1o.onrender.com", "localhost", '127.0.0.1']
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -52,7 +53,7 @@ from firebase_admin import credentials
 
 FIREBASE_CREDS_PATH = BASE_DIR / "firebase_config/serviceAccountKey.json"
 
-cred = credentials.Certificate(str(FIREBASE_CREDS_PATH))
+cred = credentials.Certificate(FIREBASE_CREDS_PATH)
 firebase_admin.initialize_app(cred)
 
 
@@ -105,29 +106,25 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # }
 
 # PostgreSQL DB local configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ToDoAppDB',
-        'USER': 'postgres',
-        'PASSWORD': 'Prerna1234@',  # Replace with your actual password
-        'HOST': 'localhost',  # or your database host
-        'PORT': '5433',  # Default PostgreSQL port
-    }
-}
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-
 # DATABASES = {
-#     'default': dj_database_url.parse(
-#         "postgresql://dowinn_db_user:9TSUhGFCu7sQU99t8zSIrRqAaxUXK4on@dpg-d1ii7l3ipnbc73bqs0cg-a/dowinn_db",
-#         conn_max_age=600
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ToDoAppDB',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Prerna1234@',  # Replace with your actual password
+#         'HOST': 'localhost',  # or your database host
+#         'PORT': '5433',  # Default PostgreSQL port
+#     }
 # }
 
+DATABASES = {
+    'default': dj_database_url.parse(
+        "postgresql://dowinn_db_user:9TSUhGFCu7sQU99t8zSIrRqAaxUXK4on@dpg-d1ii7l3ipnbc73bqs0cg-a/dowinn_db",
+        conn_max_age=600
+    )
+}
+
+WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
