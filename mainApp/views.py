@@ -4,18 +4,38 @@ from rest_framework import status, permissions
 from . import serializers, models
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from datetime import datetime
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class TaskAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    parser_classes = [MultiPartParser, FormParser]
+    
     def get(self, request, id=None):
         try:
             if id:
                 task = get_object_or_404(models.Task, id=id, user=request.user)
                 serializer = serializers.TaskSerializer(task)
                 return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
-
+            category = request.query_params.get('category')
             tasks = models.Task.objects.filter(user=request.user)
+            # Filter by category
+            if category:
+                tasks = tasks.filter(category__iexact=category)
+
+            # Filter by date range
+            start_date = request.query_params.get('start')
+            end_date = request.query_params.get('end')
+            if start_date and end_date:
+                try:
+                    start = datetime.strptime(start_date, "%Y-%m-%d").date()
+                    end = datetime.strptime(end_date, "%Y-%m-%d").date()
+                    tasks = tasks.filter(created_at__range=(start, end))
+                except ValueError:
+                    return Response(
+                        {"status": "error", "error": "Invalid date format. Use YYYY-MM-DD."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             serializer = serializers.TaskSerializer(tasks, many=True)
             return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
 

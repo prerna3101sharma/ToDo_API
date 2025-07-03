@@ -11,10 +11,28 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     priority_choices = [
         ('low', 'Low'),
-        ('medium', 'Medium'),
+        ('medium', 'Medium'), 
         ('high', 'High'),
     ]
     priority = models.CharField(max_length=6, choices=priority_choices, default='medium')
+    repeat_choices = [
+        ('none', 'None'),
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+    ]
+    repeat = models.CharField(max_length=10, choices=repeat_choices, default='none')
+
+    category_choices = [
+        ('work', 'Work'),
+        ('personal', 'Personal'),
+        ('health', 'Health'),  
+        ('finance', 'Finance'),
+        ('study', 'Study'),
+        ('other', 'Other'),
+    ]
+    category = models.CharField(max_length=10, choices=category_choices, default='other')
+    attachment = models.FileField(upload_to='attachments/', blank=True, null=True)
     due_date = models.DateField(null=True, blank=True) 
 
 
