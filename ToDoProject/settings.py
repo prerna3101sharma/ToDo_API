@@ -119,7 +119,8 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.parse(
-        "postgresql://dowinn_db_user:9TSUhGFCu7sQU99t8zSIrRqAaxUXK4on@dpg-d1ii7l3ipnbc73bqs0cg-a/dowinn_db",
+        # "postgresql://dowinn_db_user:9TSUhGFCu7sQU99t8zSIrRqAaxUXK4on@dpg-d1ii7l3ipnbc73bqs0cg-a/dowinn_db",
+        "postgresql://postgres.loffepzebjhllfqkgams:ToDoDB2004@###@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
         conn_max_age=600
     )
 }
