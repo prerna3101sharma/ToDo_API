@@ -95,6 +95,10 @@ DATABASES = {
         'HOST': 'db.loffepzebjhllfqkgams.supabase.co',  # or your database host
         'PORT': '5432',  # Default PostgreSQL port
     }
+    'OPTIONS': {
+    'sslmode': 'require',
+}
+
 }
 
 
