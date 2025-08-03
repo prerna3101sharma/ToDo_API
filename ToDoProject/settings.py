@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os 
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -86,22 +87,28 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'ToDoDB2004@###',  # Replace with your actual password
+#         'HOST': 'db.loffepzebjhllfqkgams.supabase.co',  # or your database host
+#         'PORT': '5432',  # Default PostgreSQL port
+#         'OPTIONS': {
+#     'sslmode': 'require',
+# }
+#     }
+
+
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'ToDoDB2004@###',  # Replace with your actual password
-        'HOST': 'db.loffepzebjhllfqkgams.supabase.co',  # or your database host
-        'PORT': '5432',  # Default PostgreSQL port
-        'OPTIONS': {
-    'sslmode': 'require',
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
-    }
-
-
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
