@@ -94,10 +94,11 @@ DATABASES = {
         'PASSWORD': 'ToDoDB2004@###',  # Replace with your actual password
         'HOST': 'db.loffepzebjhllfqkgams.supabase.co',  # or your database host
         'PORT': '5432',  # Default PostgreSQL port
-    }
-    'OPTIONS': {
+        'OPTIONS': {
     'sslmode': 'require',
 }
+    }
+
 
 }
 
