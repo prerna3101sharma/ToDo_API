@@ -107,24 +107,24 @@ WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # }
 
 # PostgreSQL DB local configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ToDoAppDB',
-#         'USER': 'postgres',
-#         'PASSWORD': 'Prerna1234@',  # Replace with your actual password
-#         'HOST': 'localhost',  # or your database host
-#         'PORT': '5433',  # Default PostgreSQL port
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.loffepzebjhllfqkgams',
+        'PASSWORD': 'ToDoDB2004@###',  # Replace with your actual password
+        'HOST': 'aws-0-ap-south-1.pooler.supabase.com',  # or your database host
+        'PORT': '6543',  # Default PostgreSQL port
+    }
 }
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL'),
+#         conn_max_age=600,
+#         ssl_require=True
+#     )
+# }
 
 WSGI_APPLICATION = 'ToDoProject.wsgi.application'
 # Password validation
