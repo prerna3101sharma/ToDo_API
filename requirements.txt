@@ -13,7 +13,6 @@ dj-rest-auth==7.0.1
 Django==5.2.1
 django-allauth==65.9.0
 djangorestframework==3.16.0
-djangorestframework_simplejwt==5.5.0
 firebase-admin==6.9.0
 google-api-core==2.25.0
 google-api-python-client==2.171.0
