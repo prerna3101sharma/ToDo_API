@@ -32,7 +32,7 @@ class Task(models.Model):
         ('other', 'Other'),
     ]
     category = models.CharField(max_length=10, choices=category_choices, default='other')
-    attachment = models.FileField(upload_to='attachments/', blank=True, null=True)
+    attachment = models.URLField(blank=True, null=True)
     due_date = models.DateField(null=True, blank=True) 
 
 
