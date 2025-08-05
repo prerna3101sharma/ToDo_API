@@ -6,6 +6,11 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from rest_framework.parsers import MultiPartParser, FormParser
+from supabase import create_client
+import os
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY =  os.getenv("SUPABASE_SERVICE_ROLE")
 
 class TaskAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -44,10 +49,30 @@ class TaskAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            file = request.FILES.get('attachment')  # Get file from request
+            file_url = None
+
+            if file:
+                # Initialize Supabase client
+                supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+                # Upload to 'attachments' bucket (make sure this bucket exists and is public)
+                file_path = f"{request.user.id}/{file.name}"
+                res = supabase.storage.from_("attachments").upload(file_path, file.read(), file.content_type)
+
+                if res.get("error"):
+                    return Response({"status": "error", "message": res['error']['message']}, status=500)
+
+                # Generate public URL
+                file_url = f"{SUPABASE_URL}/storage/v1/object/public/attachments/{file_path}"
+                request.data._mutable = True  # Make request data mutable
+                request.data['attachment'] = file_url  # Overwrite attachment with URL
+
             serializer = serializers.TaskSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(user=request.user)
                 return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_201_CREATED)
+
             return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except ValidationError as ve:
