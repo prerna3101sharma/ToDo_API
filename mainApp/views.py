@@ -10,6 +10,7 @@ from supabase import create_client
 import os
 import requests
 import urllib.parse
+from datetime import datetime
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_BUCKET = "attachments"
@@ -57,7 +58,8 @@ class TaskAPI(APIView):
 
             if file:
                 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-                safe_file_name = urllib.parse.quote(file.name)
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                safe_file_name = urllib.parse.quote(f"{timestamp}_{file.name}")
                 file_path = f"{request.user.id}/{safe_file_name}"
                 res = supabase.storage.from_("attachments").upload(
                         path=file_path,
