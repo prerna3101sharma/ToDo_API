@@ -1,32 +1,32 @@
 # accounts/authentication.py
-from firebase_admin import auth as firebase_auth, credentials, initialize_app
+
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework import exceptions
 from django.contrib.auth.models import User
-
 import firebase_admin
+from firebase_admin import auth, credentials
 
+# Initialize Firebase app once
 if not firebase_admin._apps:
-    cred = credentials.Certificate('firebase_config/serviceAccountKey.json')
+    cred = credentials.Certificate("firebase_config/serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
 
 class FirebaseAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        id_token = request.headers.get('Authorization')
-
-        if not id_token or not id_token.startswith("Bearer "):
+        id_token = request.META.get('HTTP_AUTHORIZATION')
+        if not id_token:
             return None
 
-        id_token = id_token.split("Bearer ")[1]
+        if id_token.startswith("Bearer "):
+            id_token = id_token[7:]
 
         try:
-            decoded_token = firebase_auth.verify_id_token(id_token)
-            uid = decoded_token['uid']
-            email = decoded_token.get('email', f'{uid}@firebase.local')
+            decoded_token = auth.verify_id_token(id_token)
+            uid = decoded_token.get('uid')
+            email = decoded_token.get('email')
 
-            user, _ = User.objects.get_or_create(username=uid, defaults={"email": email})
+            user, created = User.objects.get_or_create(username=uid, defaults={"email": email})
             return (user, None)
 
         except Exception as e:
-            print(f"Authentication error: {e}")
-            raise AuthenticationFailed("Invalid Firebase ID token.")
+            raise exceptions.AuthenticationFailed(f'Firebase token invalid: {str(e)}')
