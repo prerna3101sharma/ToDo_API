@@ -8,8 +8,10 @@ from datetime import datetime
 from rest_framework.parsers import MultiPartParser, FormParser
 from supabase import create_client
 import os
+import requests
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_BUCKET = "attachments"
 SUPABASE_KEY =  os.getenv("SUPABASE_SERVICE_ROLE")
 
 class TaskAPI(APIView):
@@ -51,37 +53,32 @@ class TaskAPI(APIView):
         try:
             file = request.FILES.get('attachment')
             file_url = None
-    
+
             if file:
-                # Initialize Supabase client
                 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    
-                # Upload to Supabase bucket
                 file_path = f"{request.user.id}/{file.name}"
-                res = supabase.storage.from_("attachments").upload(
+                res = supabase.storage.from_(SUPABASE_BUCKET).upload(
                     path=file_path,
                     file=file.read(),
                     file_options={"content-type": file.content_type}
                 )
-    
-                if res.get("error"):
-                    return Response({"status": "error", "message": res['error']['message']}, status=500)
-    
-                # Construct public URL
-                file_url = f"{SUPABASE_URL}/storage/v1/object/public/attachments/{file_path}"
-    
-            # Create a copy of request data with 'attachment' as URL
+
+                if res.error:
+                    return Response({"status": "error", "message": str(res.error)}, status=500)
+
+                file_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{file_path}"
+
             task_data = request.data.copy()
             if file_url:
                 task_data['attachment'] = file_url
-    
+
             serializer = serializers.TaskSerializer(data=task_data)
             if serializer.is_valid():
                 serializer.save(user=request.user)
                 return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_201_CREATED)
-    
+
             return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    
+
         except ValidationError as ve:
             return Response({"status": "error", "message": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
