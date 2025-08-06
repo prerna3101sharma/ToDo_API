@@ -21,7 +21,7 @@ class Task(models.Model):
         ('weekly', 'Weekly'),
         ('monthly', 'Monthly'),
     ]
-    repeat = models.CharField(max_length=10, choices=repeat_choices, default='none')
+    repeat = models.CharField(max_length=10, choices=repeat_choices, default='none', null=True, blank=True  )
 
     category_choices = [
         ('work', 'Work'),
