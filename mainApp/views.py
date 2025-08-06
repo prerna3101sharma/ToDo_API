@@ -9,6 +9,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from supabase import create_client
 import os
 import requests
+import urllib.parse
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_BUCKET = "attachments"
@@ -56,7 +57,8 @@ class TaskAPI(APIView):
 
             if file:
                 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-                file_path = f"{request.user.id}/{file.name}"
+                safe_file_name = urllib.parse.quote(file.name)
+                file_path = f"{request.user.id}/{safe_file_name}"
                 res = supabase.storage.from_("attachments").upload(
                         path=file_path,
                         file=file.read(),
