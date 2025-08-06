@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from rest_framework.parsers import MultiPartParser, FormParser
 from supabase import create_client
+import mimetypes
 import os
 import requests
 import urllib.parse
@@ -71,11 +72,17 @@ class TaskAPI(APIView):
                 # Read raw file bytes (important!)
                 file_bytes = file.read()
 
+                content_type = file.content_type
+                if content_type == 'multipart/form-data':
+                    guessed_type, _ = mimetypes.guess_type(file.name)
+                    content_type = guessed_type or 'application/octet-stream'
+
+                
                 # Upload to Supabase
                 res = supabase.storage.from_("attachments").upload(
                     path=file_path,
                     file=file_bytes,  # ✅ raw bytes, NOT request object
-                    file_options={"content-type": file.content_type}
+                    file_options={"content-type": content_type}
                 )
 
                 # if hasattr(res, 'error') and res.error:
