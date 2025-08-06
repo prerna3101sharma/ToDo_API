@@ -12,11 +12,14 @@ import requests
 import urllib.parse
 from datetime import datetime
 from accounts.authentication import FirebaseAuthentication
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_BUCKET = "attachments"
 SUPABASE_KEY =  os.getenv("SUPABASE_SERVICE_ROLE")
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TaskAPI(APIView):
     authentication_classes = [FirebaseAuthentication]
     permission_classes = [permissions.IsAuthenticated]
