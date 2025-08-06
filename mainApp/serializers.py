@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 
 class TaskSerializer(serializers.ModelSerializer):
+    attachment = serializers.URLField(required=False, allow_null=True)
     class Meta:
         model = Task
         fields = '__all__'
