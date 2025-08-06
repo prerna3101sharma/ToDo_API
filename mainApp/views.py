@@ -67,7 +67,7 @@ class TaskAPI(APIView):
                     return Response({"status": "error", "message": str(res.error)}, status=500)
 
                 file_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{file_path}"
-
+                print("Generated file URL:", file_url)
             task_data = request.data.copy()
             if file_url:
                 task_data['attachment'] = file_url
