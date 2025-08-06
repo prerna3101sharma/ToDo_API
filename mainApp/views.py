@@ -27,11 +27,11 @@ class TaskAPI(APIView):
     parser_classes = [MultiPartParser, FormParser]
     
     def get(self, request, id=None):
+        if id:
+            task = get_object_or_404(models.Task, id=id, user=request.user)
+            serializer = serializers.TaskSerializer(task)
+            return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
         try:
-            if id:
-                task = get_object_or_404(models.Task, id=id, user=request.user)
-                serializer = serializers.TaskSerializer(task)
-                return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
             category = request.query_params.get('category')
             tasks = models.Task.objects.filter(user=request.user)
             # Filter by category
@@ -119,9 +119,10 @@ class TaskAPI(APIView):
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def patch(self, request, id=None):
-        try:
+        if id:
             task = get_object_or_404(models.Task, id=id, user=request.user)
             serializer = serializers.TaskSerializer(task, data=request.data, partial=True)
+        try:
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
@@ -133,8 +134,9 @@ class TaskAPI(APIView):
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, id=None):
-        try:
+        if id:
             task = get_object_or_404(models.Task, id=id, user=request.user)
+        try:
             task.delete()
             return Response({"status": "success", "message": "Task deleted"}, status=status.HTTP_200_OK)
 
