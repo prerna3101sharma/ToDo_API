@@ -55,20 +55,28 @@ class TaskAPI(APIView):
         try:
             file = request.FILES.get('attachment')
             file_url = None
-
+            
             if file:
                 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
                 safe_file_name = urllib.parse.quote(f"{timestamp}_{file.name}")
                 file_path = f"{request.user.id}/{safe_file_name}"
-                res = supabase.storage.from_("attachments").upload(
-                        path=file_path,
-                        file=file.read(),
-                        file_options={"content-type": file.content_type}
-                    )
 
-                if hasattr(res, 'error') and res.error:
-                    return Response({"status": "error", "message": str(res.error)}, status=500)
+
+                # Read raw file bytes (important!)
+                file_bytes = file.read()
+
+                # Upload to Supabase
+                res = supabase.storage.from_("attachments").upload(
+                    path=file_path,
+                    file=file_bytes,  # ✅ raw bytes, NOT request object
+                    file_options={"content-type": file.content_type}
+                )
+
+                # if hasattr(res, 'error') and res.error:
+                #     return Response({"status": "error", "message": str(res.error)}, status=500)
+                if isinstance(res, dict) and res.get("error"):
+                    return Response({"status": "error", "message": res['error']['message']}, status=500)
 
                 file_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{file_path}"
                 print("Generated file URL:", file_url)
