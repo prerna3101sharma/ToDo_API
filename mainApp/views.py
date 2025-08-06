@@ -57,13 +57,13 @@ class TaskAPI(APIView):
             if file:
                 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
                 file_path = f"{request.user.id}/{file.name}"
-                res = supabase.storage.from_(SUPABASE_BUCKET).upload(
-                    path=file_path,
-                    file=file.read(),
-                    file_options={"content-type": file.content_type}
-                )
+                res = supabase.storage.from_("attachments").upload(
+                        path=file_path,
+                        file=file.read(),
+                        file_options={"content-type": file.content_type}
+                    )
 
-                if res.error:
+                if hasattr(res, 'error') and res.error:
                     return Response({"status": "error", "message": str(res.error)}, status=500)
 
                 file_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{file_path}"
