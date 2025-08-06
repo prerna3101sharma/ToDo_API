@@ -11,7 +11,7 @@ import os
 import requests
 import urllib.parse
 from datetime import datetime
-from .authentication import FirebaseAuthentication
+from accounts.authentication import FirebaseAuthentication
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_BUCKET = "attachments"
