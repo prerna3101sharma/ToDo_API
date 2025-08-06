@@ -11,12 +11,14 @@ import os
 import requests
 import urllib.parse
 from datetime import datetime
+from .authentication import FirebaseAuthentication
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_BUCKET = "attachments"
 SUPABASE_KEY =  os.getenv("SUPABASE_SERVICE_ROLE")
 
 class TaskAPI(APIView):
+    authentication_classes = [FirebaseAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
     
