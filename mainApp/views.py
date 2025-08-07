@@ -61,7 +61,7 @@ class TaskAPI(APIView):
 
         except Exception as e:
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    @csrf_exempt
     def post(self, request, *args, **kwargs):
         try:
             file = request.FILES.get('attachment')
@@ -123,7 +123,7 @@ class TaskAPI(APIView):
             return Response({"status": "error", "message": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    @csrf_exempt
     def patch(self, request, id=None):
         if id:
             task = get_object_or_404(models.Task, id=id, user=request.user)
@@ -139,6 +139,7 @@ class TaskAPI(APIView):
         except Exception as e:
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @csrf_exempt
     def delete(self, request, id=None):
         if id:
             task = get_object_or_404(models.Task, id=id, user=request.user)
