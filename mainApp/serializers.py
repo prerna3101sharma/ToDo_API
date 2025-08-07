@@ -5,6 +5,12 @@ import mimetypes
 
 class TaskSerializer(serializers.ModelSerializer):
     attachment = serializers.URLField(required=False, allow_null=True)
+    due_date = serializers.DateTimeField(
+        required=False,
+        allow_null=True,
+        format="%Y-%m-%d %H:%M",           # Optional: response format
+        input_formats=["%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M"]  # Accept both "2025-08-07 14:30" and "2025-08-07T14:30"
+    )
     class Meta:
         model = Task
         fields = '__all__'
