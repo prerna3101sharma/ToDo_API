@@ -100,6 +100,7 @@ class TaskAPI(APIView):
             task_data = {
                 "title": request.data.get("title"),
                 "description": request.data.get("description"),
+                "completed": request.data.get("completed"),
                 "priority": request.data.get("priority"),     # optional
                 "repeat": request.data.get("repeat"),         # optional
                 "category": request.data.get("category"),     # optional
