@@ -25,7 +25,6 @@ from django.http import JsonResponse
 def health_check(request):
     return JsonResponse({"status": "ok"})
 
-@method_decorator(csrf_exempt, name='dispatch')
 class TaskAPI(APIView):
     authentication_classes = [FirebaseAuthentication]
     permission_classes = [permissions.IsAuthenticated]
