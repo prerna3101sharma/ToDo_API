@@ -33,7 +33,7 @@ class Task(models.Model):
     ]
     category = models.CharField(max_length=10, choices=category_choices, default='other')
     attachment = models.URLField(blank=True, null=True)
-    due_date = models.DateField(null=True, blank=True) 
+    due_date = models.DateTimeField(null=True, blank=True) 
 
 
     def __str__(self):
