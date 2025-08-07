@@ -4,5 +4,5 @@ from .views import *
 urlpatterns = [
     path("tasks/", TaskAPI.as_view()),
     path("tasks/<int:id>", TaskAPI.as_view()),
-    path('ping/', views.health_check),
+    path('ping/', health_check),
 ]
