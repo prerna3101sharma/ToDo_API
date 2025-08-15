@@ -24,7 +24,30 @@ from django.http import JsonResponse
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
-    
+
+class ProgressAPI(APIView):
+    authentication_classes = [FirebaseAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        total_tasks = models.Task.objects.filter(user=request.user).count()
+        completed_tasks = models.Task.objects.filter(user=request.user, completed=True).count()
+
+        if total_tasks == 0:
+            progress = 0
+        else:
+            progress = round((completed_tasks / total_tasks) * 100, 2)
+
+        return Response({
+            "status": "success",
+            "data": {
+                "total_tasks": total_tasks,
+                "completed_tasks": completed_tasks,
+                "progress": progress
+            }
+        }, status=status.HTTP_200_OK)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class TaskAPI(APIView):
     authentication_classes = [FirebaseAuthentication]
@@ -125,20 +148,56 @@ class TaskAPI(APIView):
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     @csrf_exempt
     def patch(self, request, id=None):
-        if id:
-            task = get_object_or_404(models.Task, id=id, user=request.user)
-            serializer = serializers.TaskSerializer(task, data=request.data, partial=True)
+        if not id:
+            return Response({"status": "error", "message": "Task ID required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+        task = get_object_or_404(models.Task, id=id, user=request.user)
+    
         try:
+            file = request.FILES.get('attachment')
+            file_url = None
+    
+            if file:
+                supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                safe_file_name = urllib.parse.quote(f"{timestamp}_{file.name}")
+                file_path = f"{request.user.id}/{safe_file_name}"
+    
+                file_bytes = file.read()
+    
+                content_type = file.content_type
+                if content_type == 'multipart/form-data':
+                    guessed_type, _ = mimetypes.guess_type(file.name)
+                    content_type = guessed_type or 'application/octet-stream'
+    
+                res = supabase.storage.from_("attachments").upload(
+                    path=file_path,
+                    file=file_bytes,
+                    file_options={"content-type": content_type}
+                )
+    
+                if isinstance(res, dict) and res.get("error"):
+                    return Response({"status": "error", "message": res['error']['message']}, status=500)
+    
+                file_url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{file_path}"
+    
+            task_data = request.data.copy()
+            if file_url:
+                task_data["attachment"] = file_url  # replace file object with public URL
+    
+            serializer = serializers.TaskSerializer(task, data=task_data, partial=True)
+    
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "payload": serializer.data}, status=status.HTTP_200_OK)
+    
             return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+    
         except models.Task.DoesNotExist:
             return Response({"status": "error", "message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            
     @csrf_exempt
     def delete(self, request, id=None):
         if id:
